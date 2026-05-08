@@ -1,255 +1,192 @@
 import { useState } from "react";
 import Question from "./components/Questions";
+import History from "./components/History";
+import WrongAnswer from "./components/WrongAnswer";
 
 function App() {
+
   const questions = [
     {
       question: "What is the capital of India?",
-      options: ["Delhi", "Mumbai", "Kolkata", "Chennai"],
+      options: ["Delhi", "Mumbai", "Chennai", "Kolkata"],
       answer: "Delhi",
     },
+
     {
       question: "2 + 2 = ?",
       options: ["2", "3", "4", "5"],
       answer: "4",
     },
+
     {
       question: "Which language is used in React?",
       options: ["Python", "Java", "JavaScript", "C++"],
       answer: "JavaScript",
     },
+
+    {
+      question: "Sun rises from?",
+      options: ["West", "East", "North", "South"],
+      answer: "East",
+    },
+
+    {
+      question: "Which is a fruit?",
+      options: ["Apple", "Potato", "Onion", "Carrot"],
+      answer: "Apple",
+    },
+
     {
       question: "React is a?",
-      options: ["Library", "Database", "Browser", "Server"],
+      options: ["Library", "Browser", "Database", "Server"],
       answer: "Library",
+    },
+
+    {
+      question: "How many days in a week?",
+      options: ["5", "6", "7", "8"],
+      answer: "7",
+    },
+
+    {
+      question: "Which planet do we live on?",
+      options: ["Mars", "Earth", "Venus", "Jupiter"],
+      answer: "Earth",
+    },
+
+    {
+      question: "HTML is used for?",
+      options: ["Styling", "Structure", "Database", "Server"],
+      answer: "Structure",
+    },
+
+    {
+      question: "CSS is used for?",
+      options: ["Styling", "Backend", "Database", "Hosting"],
+      answer: "Styling",
     },
   ];
 
-  const [question, setQuestion] = useState(0);
+
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+
   const [score, setScore] = useState(0);
-  const [result, setResult] = useState(false);
+
+  const [showResult, setShowResult] = useState(false);
+
+  const [history, setHistory] = useState([]);
+
+  const [wrongAnswers, setWrongAnswers] = useState([]);
+
+
 
   const checkAnswer = (option) => {
-    if (option === questions[question].answer) {
+
+    setHistory([
+      ...history,
+      {
+        question: questions[currentQuestion].question,
+        selected: option,
+      },
+    ]);
+
+
+    if (option === questions[currentQuestion].answer) {
+
       setScore(score + 1);
     }
 
-    if (question + 1 < questions.length) {
-      setQuestion(question + 1);
-    } else {
-      setResult(true);
+    else {
+
+      setWrongAnswers([
+        ...wrongAnswers,
+        {
+          question: questions[currentQuestion].question,
+          selected: option,
+          correct: questions[currentQuestion].answer,
+        },
+      ]);
+    }
+
+
+    if (currentQuestion + 1 < questions.length) {
+
+      setCurrentQuestion(currentQuestion + 1);
+    }
+
+    else {
+
+      setShowResult(true);
     }
   };
 
-  const restartQuiz = () => {
-    setQuestion(0);
-    setScore(0);
-    setResult(false);
-  };
 
 
-  const progress =
-    ((question + 1) / questions.length) * 100;
 
   let message = "";
 
-  if (score <= 1) {
-    message = "Need Improvement 😅";
-  } else if (score <= 3) {
-    message = "Good Job 👍";
-  } else {
-    message = "Excellent 🎉";
+  if (score <= 5) {
+
+    message = "Need To Improve";
   }
 
+  else if (score >= 6 && score <= 8) {
+
+    message = "Good";
+  }
+
+  else {
+
+    message = "Excellent";
+  }
+
+
+
+
   return (
-    <div className="
-      min-h-screen
-      bg-gradient-to-br
-      from-indigo-600
-      via-purple-600
-      to-pink-500
-      flex
-      items-center
-      justify-center
-      px-4
-      py-10
-    ">
 
-      <div className="
-        w-full
-        max-w-4xl
-        bg-white/90
-        backdrop-blur-lg
-        rounded-[40px]
-        shadow-2xl
-        overflow-hidden
-      ">
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-5">
 
-        <div className="
-          bg-gradient-to-r
-          from-indigo-500
-          to-purple-500
-          p-8
-          text-center
-          text-white
-        ">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl">
 
-          <h1 className="
-            text-5xl
-            md:text-6xl
-            font-extrabold
-            tracking-wide
-          ">
-            Quiz App
-          </h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">
+          Quiz App
+        </h1>
 
-          <p className="
-            mt-4
-            text-lg
-            text-indigo-100
-          ">
-            Challenge your knowledge 🚀
-          </p>
-        </div>
 
-        <div className="p-6 md:p-10">
+        {showResult ? (
 
-          {result ? (
-            <div className="text-center">
+          <div>
 
-              <div className="
-                w-52
-                h-52
-                mx-auto
-                rounded-full
-                bg-gradient-to-r
-                from-indigo-500
-                to-purple-500
-                flex
-                items-center
-                justify-center
-                shadow-2xl
-              ">
+            <h2 className="text-2xl font-bold mb-4">
+              Your Score: {score}/10
+            </h2>
 
-                <div className="text-white">
+            <h3 className="text-xl text-green-600 mb-6">
+              {message}
+            </h3>
 
-                  <h2 className="
-                    text-6xl
-                    font-extrabold
-                  ">
-                    {score}
-                  </h2>
+            <History history={history} />
 
-                  <p className="text-lg">
-                    / {questions.length}
-                  </p>
-                </div>
-              </div>
+            <WrongAnswer wrongAnswers={wrongAnswers} />
 
-              {/* Message */}
-              <h3 className="
-                mt-8
-                text-4xl
-                font-bold
-                text-gray-800
-              ">
-                {message}
-              </h3>
+          </div>
 
-              <p className="
-                mt-3
-                text-gray-500
-                text-lg
-              ">
-                Quiz Completed Successfully 🎉
-              </p>
+        ) : (
 
-              <button
-                onClick={restartQuiz}
-                className="
-                  mt-10
-                  bg-gradient-to-r
-                  from-indigo-500
-                  to-purple-500
-                  hover:scale-105
-                  transition-all
-                  duration-300
-                  text-white
-                  px-10
-                  py-4
-                  rounded-full
-                  text-lg
-                  font-semibold
-                  shadow-xl
-                "
-              >
-                Restart Quiz
-              </button>
-            </div>
-          ) : (
-            <div>
+          <div>
 
-              <div className="mb-10">
+            <Question
+              data={questions[currentQuestion]}
+              checkAnswer={checkAnswer}
+            />
 
-                <div className="
-                  flex
-                  justify-between
-                  items-center
-                  mb-4
-                ">
+          </div>
 
-                  <p className="
-                    text-gray-600
-                    font-semibold
-                    text-lg
-                  ">
-                    Question {question + 1}
-                  </p>
+        )}
 
-                  <p className="
-                    text-indigo-600
-                    font-bold
-                    text-lg
-                  ">
-                    {questions.length}
-                  </p>
-                </div>
-
-            
-                <div className="
-                  w-full
-                  h-4
-                  bg-gray-200
-                  rounded-full
-                  overflow-hidden
-                ">
-
-                  <div
-                    className="
-                      h-4
-                      rounded-full
-                      bg-gradient-to-r
-                      from-indigo-500
-                      to-purple-500
-                      transition-all
-                      duration-500
-                    "
-                    style={{
-                      width: `${progress}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-            
-              <Question
-                data={questions[question]}
-                checkAnswer={checkAnswer}
-              />
-            </div>
-          )}
-        </div>
       </div>
+
     </div>
   );
 }
